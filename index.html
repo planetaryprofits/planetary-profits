@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Planetary Profits</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#C9A84C;--gold2:#F0D080;--dark:#060818;--dark2:#0D1230;--accent:#7B5EA7;--text:#E8E0F0;--muted:#8880A0;}
+body{background:var(--dark);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
+
+/* ORBIT BACKGROUND */
+.orbit-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.ob-ring{position:absolute;border-radius:50%;top:50%;left:50%;animation:ob-spin linear infinite;}
+.ob-ring:nth-child(1){width:340px;height:340px;margin:-170px 0 0 -170px;border:1px solid rgba(201,168,76,0.18);animation-duration:22s;}
+.ob-ring:nth-child(2){width:600px;height:600px;margin:-300px 0 0 -300px;border:1px solid rgba(201,168,76,0.09);animation-duration:38s;animation-direction:reverse;}
+.ob-ring:nth-child(3){width:880px;height:880px;margin:-440px 0 0 -440px;border:1px solid rgba(123,94,167,0.1);animation-duration:58s;}
+.ob-ring:nth-child(4){width:1180px;height:1180px;margin:-590px 0 0 -590px;border:1px dashed rgba(201,168,76,0.06);animation-duration:85s;animation-direction:reverse;}
+.ob-ring:nth-child(5){width:1520px;height:1520px;margin:-760px 0 0 -760px;border:1px dashed rgba(123,94,167,0.05);animation-duration:125s;}
+@keyframes ob-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.ob-ring::before{content:'';position:absolute;border-radius:50%;top:-5px;left:50%;margin-left:-5px;}
+.ob-ring:nth-child(1)::before{width:10px;height:10px;background:var(--gold);box-shadow:0 0 14px var(--gold),0 0 28px rgba(201,168,76,0.4);}
+.ob-ring:nth-child(2)::before{width:7px;height:7px;background:#A080D0;box-shadow:0 0 10px #A080D0;margin-left:-3px;top:-3px;}
+.ob-ring:nth-child(3)::before{width:9px;height:9px;background:var(--gold2);box-shadow:0 0 10px var(--gold2);margin-left:-4px;top:-4px;}
+.ob-ring:nth-child(4)::before{width:6px;height:6px;background:#7B9ED0;box-shadow:0 0 8px #7B9ED0;margin-left:-3px;top:-3px;}
+.ob-ring:nth-child(5)::before{width:5px;height:5px;background:#C4A8F0;box-shadow:0 0 6px #C4A8F0;margin-left:-2px;top:-2px;}
+.ob-sun{position:absolute;top:50%;left:50%;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,0.18) 0%,rgba(201,168,76,0.06) 45%,transparent 70%);
+  animation:sun-pulse 4s ease-in-out infinite;}
+@keyframes sun-pulse{0%,100%{transform:scale(1);opacity:0.7;}50%{transform:scale(1.3);opacity:1;}}
+.ob-glow1{position:absolute;width:500px;height:500px;top:5%;left:0;background:rgba(201,168,76,0.04);border-radius:50%;filter:blur(80px);}
+.ob-glow2{position:absolute;width:600px;height:600px;bottom:0;right:0;background:rgba(123,94,167,0.06);border-radius:50%;filter:blur(80px);}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:100;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(6,8,24,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,76,0.12);}
+.logo{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold);letter-spacing:2px;}
+.logo span{color:var(--text);}
+nav ul{list-style:none;display:flex;gap:28px;align-items:center;}
+nav ul a{color:var(--muted);text-decoration:none;font-size:0.82rem;letter-spacing:1px;transition:color 0.3s;}
+nav ul a:hover{color:var(--gold);}
+.nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000!important;padding:8px 20px;border-radius:20px;font-weight:600!important;}
+.nri-nav-pill{background:rgba(123,94,167,0.2);border:1px solid rgba(123,94,167,0.4);color:#C4A8F0!important;padding:6px 14px!important;border-radius:12px!important;font-size:0.72rem!important;}
+
+/* NRI BANNER */
+.nri-top-banner{display:none;background:linear-gradient(135deg,rgba(123,94,167,0.15),rgba(201,168,76,0.06));
+  border-bottom:1px solid rgba(123,94,167,0.2);padding:10px 40px;text-align:center;position:relative;z-index:1;}
+.nri-top-banner p{font-size:0.8rem;color:#C4A8F0;}
+.nri-top-banner p span{color:var(--gold);font-weight:600;}
+.nri-top-banner a{color:var(--gold);text-decoration:underline;cursor:pointer;}
+.nri-top-banner.show{display:block;}
+
+/* TICKER */
+.ticker{background:rgba(201,168,76,0.04);border-bottom:1px solid rgba(201,168,76,0.1);padding:9px 0;overflow:hidden;white-space:nowrap;position:relative;z-index:1;}
+.ticker-inner{display:inline-flex;gap:60px;animation:ticker 28s linear infinite;}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.ti{font-size:0.75rem;color:var(--muted);display:inline-flex;align-items:center;gap:8px;}
+.up{color:#00C864;}.dn{color:#FF6B6B;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  padding:80px 20px 60px;position:relative;z-index:1;}
+.hero-badge{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold);
+  padding:6px 18px;border-radius:20px;font-size:0.75rem;letter-spacing:2px;margin-bottom:24px;display:inline-block;}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(2.2rem,6vw,4.5rem);line-height:1.1;margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 0%,var(--gold2) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.05rem;color:var(--muted);max-width:580px;line-height:1.7;margin-bottom:16px;}
+.nri-pill{display:none;align-items:center;gap:8px;background:rgba(123,94,167,0.12);border:1px solid rgba(123,94,167,0.3);
+  border-radius:20px;padding:8px 20px;margin-bottom:24px;font-size:0.8rem;color:#C4A8F0;}
+.nri-pill.show{display:inline-flex;}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;padding:14px 32px;border-radius:30px;font-weight:700;font-size:0.95rem;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,168,76,0.4);}
+.btn-secondary{background:transparent;border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:14px 32px;border-radius:30px;font-weight:500;font-size:0.95rem;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-secondary:hover{background:rgba(201,168,76,0.1);}
+.btn-nri{background:linear-gradient(135deg,#7B5EA7,#A080D0);color:#fff;padding:14px 32px;border-radius:30px;font-weight:700;font-size:0.95rem;cursor:pointer;border:none;display:none;transition:all 0.2s;}
+.btn-nri.show{display:inline-block;}
+.btn-nri:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(123,94,167,0.4);}
+.hero-stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);font-weight:700;}
+.stat-label{font-size:0.72rem;color:var(--muted);letter-spacing:1px;margin-top:4px;}
+
+/* SECTIONS */
+section{padding:80px 40px;position:relative;z-index:1;}
+.container{max-width:1100px;margin:0 auto;}
+.section-label{color:var(--gold);font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;}
+.section-title{font-family:'Cinzel',serif;font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:16px;}
+.section-sub{color:var(--muted);max-width:560px;line-height:1.7;margin-bottom:48px;}
+
+/* NRI SECTION */
+.nri-section{display:none;background:linear-gradient(135deg,rgba(123,94,167,0.08),rgba(6,8,24,0));border-top:1px solid rgba(123,94,167,0.15);border-bottom:1px solid rgba(123,94,167,0.15);}
+.nri-section.show{display:block;}
+.nri-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.nri-countries{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
+.ctag{display:flex;align-items:center;gap:7px;background:rgba(123,94,167,0.1);border:1px solid rgba(123,94,167,0.2);border-radius:20px;padding:5px 13px;font-size:0.8rem;color:#C4A8F0;}
+.nri-feats{display:flex;flex-direction:column;gap:14px;}
+.nri-feat{display:flex;gap:12px;align-items:flex-start;}
+.nfi{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
+.nft strong{display:block;font-size:0.88rem;color:var(--text);margin-bottom:3px;}
+.nft span{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+.nri-box{background:rgba(123,94,167,0.08);border:1px solid rgba(123,94,167,0.25);border-radius:20px;padding:32px;text-align:center;}
+.nri-box h3{font-family:'Cinzel',serif;font-size:1.3rem;color:#C4A8F0;margin-bottom:10px;}
+.nri-box p{color:var(--muted);font-size:0.82rem;line-height:1.6;margin-bottom:16px;}
+.nri-price{font-family:'Cinzel',serif;font-size:2.5rem;color:#C4A8F0;margin:14px 0 4px;}
+.nri-price span{font-size:1rem;color:var(--muted);font-family:'Inter',sans-serif;font-weight:400;}
+.nri-psub{font-size:0.78rem;color:var(--muted);margin-bottom:22px;}
+.btn-nri-full{background:linear-gradient(135deg,#7B5EA7,#A080D0);color:#fff;padding:13px 28px;border-radius:30px;font-weight:700;font-size:0.92rem;cursor:pointer;border:none;width:100%;transition:all 0.2s;}
+.nri-note{font-size:0.7rem;color:var(--muted);margin-top:14px;line-height:1.6;}
+
+/* MARKETS */
+.markets-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:44px;}
+.mchip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);border-radius:28px;padding:7px 16px;font-size:0.8rem;color:var(--text);}
+.dot{width:7px;height:7px;border-radius:50%;}
+.dg{background:#00C864;}.dgo{background:var(--gold);}.db{background:#4A90D9;}.dp{background:#A080D0;}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;}
+.step{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:16px;padding:28px 22px;transition:all 0.3s;}
+.step:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-4px);}
+.step-num{font-family:'Cinzel',serif;font-size:2.8rem;color:rgba(201,168,76,0.15);font-weight:700;margin-bottom:10px;}
+.step h3{color:var(--gold2);margin-bottom:8px;font-size:0.95rem;}
+.step p{color:var(--muted);font-size:0.85rem;line-height:1.6;}
+.step-icon{font-size:1.8rem;margin-bottom:10px;}
+
+/* SIGNALS */
+.feed-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;}
+.signal-card{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:all 0.3s;}
+.signal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--accent));}
+.signal-card:hover{border-color:rgba(201,168,76,0.3);transform:translateY(-3px);}
+.signal-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.signal-date{font-size:0.72rem;color:var(--muted);}
+.signal-tag{font-size:0.68rem;padding:3px 10px;border-radius:10px;font-weight:700;}
+.tag-bull{background:rgba(0,200,100,0.12);color:#00C864;}
+.tag-neutral{background:rgba(201,168,76,0.12);color:var(--gold);}
+.signal-card h3{font-size:0.95rem;margin-bottom:7px;color:#fff;}
+.signal-card p{font-size:0.82rem;color:var(--muted);line-height:1.5;}
+.signal-planet{position:absolute;bottom:14px;right:14px;font-size:1.4rem;opacity:0.4;}
+.blur-overlay{position:absolute;inset:0;backdrop-filter:blur(6px);background:rgba(6,8,24,0.5);display:flex;align-items:center;justify-content:center;border-radius:16px;}
+.blur-overlay span{color:var(--gold);font-size:0.8rem;border:1px solid rgba(201,168,76,0.4);padding:7px 18px;border-radius:18px;cursor:pointer;}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;max-width:900px;margin:0 auto;}
+.plan{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:20px;padding:34px 26px;position:relative;transition:all 0.3s;}
+.plan.featured{background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(123,94,167,0.06));border-color:var(--gold);}
+.plan.nri-plan{background:linear-gradient(135deg,rgba(123,94,167,0.1),rgba(6,8,24,0));border-color:rgba(123,94,167,0.3);display:none;}
+.plan.nri-plan.show{display:block;}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;padding:4px 16px;border-radius:12px;font-size:0.68rem;font-weight:700;white-space:nowrap;}
+.plan-badge.nb{background:linear-gradient(135deg,#7B5EA7,#A080D0);color:#fff;}
+.plan-name{font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold);margin-bottom:8px;}
+.plan.nri-plan .plan-name{color:#C4A8F0;}
+.plan-price{font-size:2.2rem;font-weight:700;color:#fff;margin:14px 0 4px;}
+.plan-price span{font-size:0.9rem;color:var(--muted);font-weight:400;}
+.plan-psub{font-size:0.72rem;color:var(--muted);margin-bottom:22px;}
+.plan ul{list-style:none;margin-bottom:28px;}
+.plan ul li{font-size:0.82rem;color:var(--text);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:9px;align-items:flex-start;}
+.plan ul li::before{content:'✦';color:var(--gold);font-size:0.68rem;margin-top:2px;flex-shrink:0;}
+.plan.nri-plan ul li::before{color:#C4A8F0;}
+.plan ul li.off{color:var(--muted);opacity:0.45;}
+.plan ul li.off::before{color:var(--muted);}
+.disclaimer{text-align:center;margin:32px auto 0;font-size:0.73rem;color:var(--muted);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 20px;max-width:720px;}
+
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;}
+.test-card{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.08);border-radius:16px;padding:22px;}
+.test-card.nri-test{border-color:rgba(123,94,167,0.18);}
+.stars{color:var(--gold);font-size:0.82rem;margin-bottom:10px;}
+.test-card p{font-size:0.83rem;color:var(--text);line-height:1.6;margin-bottom:14px;font-style:italic;}
+.test-author{display:flex;align-items:center;gap:10px;}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;}
+.avatar.nri-av{background:linear-gradient(135deg,#7B5EA7,#A080D0);}
+.author-info strong{display:block;font-size:0.82rem;}
+.author-info span{font-size:0.72rem;color:var(--muted);}
+.lflag{font-size:0.7rem;color:#C4A8F0;margin-top:2px;}
+
+/* CTA */
+.cta-banner{background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(123,94,167,0.1));border:1px solid rgba(201,168,76,0.18);border-radius:24px;padding:56px 36px;text-align:center;max-width:780px;margin:0 auto;}
+.cta-banner h2{font-family:'Cinzel',serif;font-size:clamp(1.5rem,3vw,2.1rem);margin-bottom:14px;}
+.cta-banner p{color:var(--muted);margin-bottom:28px;}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* FAQ */
+.faq-list{max-width:700px;margin:0 auto;}
+.faq-item{border-bottom:1px solid rgba(255,255,255,0.06);padding:18px 0;}
+.faq-q{font-size:0.92rem;color:var(--gold2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:500;}
+.faq-a{font-size:0.84rem;color:var(--muted);line-height:1.7;margin-top:10px;display:none;}
+.faq-item.open .faq-a{display:block;}
+.faq-arrow{transition:transform 0.3s;font-size:0.72rem;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid rgba(201,168,76,0.1);padding:44px 40px 22px;text-align:center;position:relative;z-index:1;}
+.footer-logo{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold);margin-bottom:6px;}
+.footer-links{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin:16px 0 26px;}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-copy{font-size:0.7rem;color:var(--muted);border-top:1px solid rgba(255,255,255,0.05);padding-top:18px;line-height:1.7;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--dark2);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:36px;max-width:420px;width:100%;position:relative;}
+.modal.nri-modal{border-color:rgba(123,94,167,0.35);}
+.modal h2{font-family:'Cinzel',serif;color:var(--gold);margin-bottom:6px;}
+.modal.nri-modal h2{color:#C4A8F0;}
+.modal-sub{color:var(--muted);font-size:0.82rem;margin-bottom:22px;}
+.minp{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.18);color:var(--text);padding:11px 14px;border-radius:10px;font-size:0.88rem;margin-bottom:11px;outline:none;font-family:'Inter',sans-serif;}
+.minp:focus{border-color:rgba(201,168,76,0.4);}
+.modal.nri-modal .minp{border-color:rgba(123,94,167,0.25);}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.success-msg{display:none;color:#00C864;font-size:0.82rem;text-align:center;margin-top:10px;padding:10px;background:rgba(0,200,100,0.08);border-radius:8px;}
+.cur-note{font-size:0.72rem;color:var(--muted);text-align:center;margin-bottom:10px;}
+.modal-note{font-size:0.68rem;color:var(--muted);text-align:center;margin-top:12px;}
+
+@media(max-width:640px){
+  nav ul{display:none;}
+  section{padding:60px 20px;}
+  nav{padding:14px 20px;}
+  .nri-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:24px;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .nri-top-banner{padding:10px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ORBIT BACKGROUND -->
+<div class="orbit-bg">
+  <div class="ob-ring"></div>
+  <div class="ob-ring"></div>
+  <div class="ob-ring"></div>
+  <div class="ob-ring"></div>
+  <div class="ob-ring"></div>
+  <div class="ob-sun"></div>
+  <div class="ob-glow1"></div>
+  <div class="ob-glow2"></div>
+</div>
+
+<!-- NRI TOP BANNER -->
+<div class="nri-top-banner" id="nriBanner">
+  <p>🌍 You're visiting from outside India — <span>USD pricing & international payment</span> available for NRI investors. <a onclick="openNriModal()">See NRI plan →</a></p>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">The Planetary <span>Profits</span></div>
+  <ul>
+    <li><a href="#markets">Markets</a></li>
+    <li><a href="#signals">Signals</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li id="nriNavItem" style="display:none;"><a href="#" class="nri-nav-pill" onclick="openNriModal();return false;">🌍 NRI</a></li>
+    <li><a href="#" class="nav-cta" onclick="openModal();return false;">Subscribe</a></li>
+  </ul>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker" style="margin-top:64px;">
+  <div class="ticker-inner">
+    <span class="ti">🪐 Saturn Direct <span class="up">▲ Bullish</span></span>
+    <span class="ti">🥇 MCX Gold — Jupiter Trine <span class="up">▲ Momentum</span></span>
+    <span class="ti">🛢️ Crude Oil — Mars Transit <span class="dn">▼ Caution</span></span>
+    <span class="ti">☿ Mercury Direct <span class="up">▲ Recovery</span></span>
+    <span class="ti">🌾 MCX Silver — Venus Aspect <span class="up">▲ Bullish</span></span>
+    <span class="ti">♃ Jupiter–Venus Trine <span class="up">▲ Strong</span></span>
+    <span class="ti">🌕 Full Moon Libra <span class="dn">▼ Volatile</span></span>
+    <span class="ti">🪐 Saturn Direct <span class="up">▲ Bullish</span></span>
+    <span class="ti">🥇 MCX Gold — Jupiter Trine <span class="up">▲ Momentum</span></span>
+    <span class="ti">🛢️ Crude Oil — Mars Transit <span class="dn">▼ Caution</span></span>
+    <span class="ti">☿ Mercury Direct <span class="up">▲ Recovery</span></span>
+    <span class="ti">🌾 MCX Silver — Venus Aspect <span class="up">▲ Bullish</span></span>
+    <span class="ti">♃ Jupiter–Venus Trine <span class="up">▲ Strong</span></span>
+    <span class="ti">🌕 Full Moon Libra <span class="dn">▼ Volatile</span></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ Cosmic Timing. Market Rhythm.</div>
+  <h1 id="heroH1">Read the Stars.<br/>Time the Market.</h1>
+  <p id="heroP">Planetary cycle intelligence for Indian Indices & MCX Commodities — before the crowd sees it coming.</p>
+  <div class="nri-pill" id="nriPill">🌍 NRI investors — pay in USD, GBP, AED & more</div>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="openModal()">Subscribe — ₹15,000/yr</button>
+    <button class="btn-nri" id="heroNriBtn" onclick="openNriModal()">🌍 NRI Access — $179/yr</button>
+    <a href="#how" class="btn-secondary">How It Works</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">435+</div><div class="stat-label">Subscribers</div></div>
+    <div class="stat"><div class="stat-num">89%</div><div class="stat-label">Accuracy</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Markets</div></div>
+    <div class="stat"><div class="stat-num">Daily</div><div class="stat-label">Updates</div></div>
+  </div>
+</section>
+
+<!-- NRI SECTION -->
+<section class="nri-section" id="nriSection">
+  <div class="container">
+    <div class="nri-grid">
+      <div>
+        <div class="section-label" style="color:#C4A8F0;">For NRI Investors</div>
+        <h2 class="section-title" style="color:#C4A8F0;">Wherever You Are,<br/>The Stars Align.</h2>
+        <p class="section-sub">Built for the Indian diaspora managing wealth from the US, UK, UAE, Canada, Singapore and beyond. Same cosmic intelligence — in your currency and timezone.</p>
+        <div class="nri-countries">
+          <div class="ctag">🇺🇸 USA</div><div class="ctag">🇬🇧 UK</div><div class="ctag">🇦🇪 UAE</div>
+          <div class="ctag">🇨🇦 Canada</div><div class="ctag">🇸🇬 Singapore</div><div class="ctag">🇦🇺 Australia</div>
+          <div class="ctag">🇩🇪 Europe</div><div class="ctag">+ More</div>
+        </div>
+        <div class="nri-feats">
+          <div class="nri-feat"><div class="nfi">💱</div><div class="nft"><strong>Pay in Your Currency</strong><span>USD, GBP, AED, CAD, SGD — secure international payment via Stripe.</span></div></div>
+          <div class="nri-feat"><div class="nfi">⏰</div><div class="nft"><strong>Timezone-Aware Alerts</strong><span>Signals delivered at times relevant to you — not just IST.</span></div></div>
+          <div class="nri-feat"><div class="nfi">🥇</div><div class="nft"><strong>Full MCX Coverage</strong><span>Gold, Silver, Crude Oil — relevant for NRI portfolios tracking Indian commodities.</span></div></div>
+          <div class="nri-feat"><div class="nfi">📊</div><div class="nft"><strong>India Index Lens</strong><span>Track your Indian index exposure from abroad. All calls fully relevant to NRI investors.</span></div></div>
+        </div>
+      </div>
+      <div class="nri-box">
+        <div style="font-size:2.8rem;margin-bottom:12px;">🌍</div>
+        <h3>NRI Annual Plan</h3>
+        <p>Full access to all index and MCX commodity signals. Pay in your currency.</p>
+        <div class="nri-price">$179<span> / year</span></div>
+        <div class="nri-psub">≈ ₹15,000 · Also in GBP, AED, CAD</div>
+        <button class="btn-nri-full" onclick="openNriModal()">🌍 Get NRI Access</button>
+        <div class="nri-note">✓ Instant Telegram access &nbsp;·&nbsp; ✓ Cancel anytime<br/>✓ Secured by Stripe</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKETS -->
+<section id="markets" style="background:var(--dark2);">
+  <div class="container">
+    <div class="section-label">Coverage</div>
+    <h2 class="section-title">Markets We Time</h2>
+    <p class="section-sub">Complete planetary timing across Indian indices and MCX commodities.</p>
+    <div class="markets-strip">
+      <div class="mchip"><div class="dot dp"></div>Nifty 50</div>
+      <div class="mchip"><div class="dot dp"></div>Bank Nifty</div>
+      <div class="mchip"><div class="dot dg"></div>Sensex</div>
+      <div class="mchip"><div class="dot dgo"></div>MCX Gold</div>
+      <div class="mchip"><div class="dot dgo"></div>MCX Silver</div>
+      <div class="mchip"><div class="dot db"></div>MCX Crude Oil</div>
+      <div class="mchip"><div class="dot db"></div>MCX Copper</div>
+      <div class="mchip"><div class="dot dp"></div>Natural Gas</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:var(--dark);">
+  <div class="container">
+    <div class="section-label">Process</div>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Ancient wisdom meets modern markets. Four steps from planetary alignment to your trading edge.</p>
+    <div class="steps">
+      <div class="step"><div class="step-icon">🔭</div><div class="step-num">01</div><h3>Planetary Mapping</h3><p>Major transits & aspects historically correlated with market turning points are tracked daily.</p></div>
+      <div class="step"><div class="step-icon">📊</div><div class="step-num">02</div><h3>Market Overlay</h3><p>Celestial data overlaid on NSE & MCX charts to identify recurring patterns across instruments.</p></div>
+      <div class="step"><div class="step-icon">🎯</div><div class="step-num">03</div><h3>Window Identified</h3><p>Precise time windows flagged for trend reversals, momentum bursts, and consolidation zones.</p></div>
+      <div class="step"><div class="step-icon">📲</div><div class="step-num">04</div><h3>You Are Notified</h3><p>App push notifications + Telegram alerts delivered before the market opens.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNALS -->
+<section id="signals" style="background:var(--dark2);">
+  <div class="container">
+    <div class="section-label">Live Feed</div>
+    <h2 class="section-title">Recent Signals</h2>
+    <p class="section-sub">Sample timing calls across indices and commodities. Subscribe to unlock full access.</p>
+    <div class="feed-grid">
+      <div class="signal-card">
+        <div class="signal-meta"><span class="signal-date">30 Mar 2025 · INDEX</span><span class="signal-tag tag-bull">Bullish</span></div>
+        <h3>Nifty Recovery Window</h3>
+        <p>Saturn–Jupiter alignment flagged strong support. Best recovery window 2–3 Apr identified 3 days in advance.</p>
+        <div class="signal-planet">♃</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-meta"><span class="signal-date">28 Mar 2025 · MCX</span><span class="signal-tag tag-bull">Bullish</span></div>
+        <h3>MCX Gold Momentum</h3>
+        <p>Venus–Jupiter trine flagged a strong bullish window. Price surged ₹1,200 within the identified 3-day window.</p>
+        <div class="signal-planet">🥇</div>
+      </div>
+      <div class="signal-card" style="position:relative;">
+        <div class="signal-meta"><span class="signal-date">9 Apr 2025 · MCX</span><span class="signal-tag tag-neutral">Premium</span></div>
+        <h3>Crude Oil — Reversal Watch</h3>
+        <p>Mars–Pluto configuration active. Key inflection window approaching mid-week.</p>
+        <div class="signal-planet">🛢️</div>
+        <div class="blur-overlay"><span onclick="openModal()">🔒 Subscribe to Unlock</span></div>
+      </div>
+      <div class="signal-card" style="position:relative;">
+        <div class="signal-meta"><span class="signal-date">April · Monthly</span><span class="signal-tag tag-neutral">Premium</span></div>
+        <h3>April Cosmic Calendar</h3>
+        <p>All planetary events mapped to Nifty, Gold, Silver & Crude inflection points for April.</p>
+        <div class="signal-planet">🪐</div>
+        <div class="blur-overlay"><span onclick="openModal()">🔒 Subscribe to Unlock</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="background:var(--dark);">
+  <div class="container" style="text-align:center;">
+    <div class="section-label">Plans</div>
+    <h2 class="section-title">Choose Your Orbit</h2>
+    <p class="section-sub" style="margin:0 auto 44px;">One subscription. Complete access to all signals, all markets, all year.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <div class="plan-name">Explorer</div>
+        <div class="plan-price">Free<span> / forever</span></div>
+        <div class="plan-psub">Get a taste of the cosmos</div>
+        <ul>
+          <li>Weekly summary posts</li>
+          <li>Past signal archive</li>
+          <li>Telegram community</li>
+          <li class="off">Daily timing windows</li>
+          <li class="off">MCX commodity signals</li>
+          <li class="off">Monthly cosmic calendar</li>
+        </ul>
+        <button class="btn-secondary" style="width:100%" onclick="openModal()">Get Started Free</button>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">✦ Most Popular</div>
+        <div class="plan-name">Astro Pro</div>
+        <div class="plan-price">₹15,000<span> / year</span></div>
+        <div class="plan-psub">≈ ₹1,250/month · Full access</div>
+        <ul>
+          <li>Daily INDEX — Nifty, Bank Nifty, Sensex</li>
+          <li>MCX Gold, Silver, Crude, Copper signals</li>
+          <li>Monthly cosmic calendar</li>
+          <li>Premium Telegram alerts</li>
+          <li>Mobile app — iOS & Android</li>
+          <li>Full signal history & accuracy</li>
+        </ul>
+        <button class="btn-primary" style="width:100%" onclick="openModal()">Subscribe — ₹15,000/yr</button>
+      </div>
+      <div class="plan nri-plan" id="nriPlanCard">
+        <div class="plan-badge nb">🌍 NRI Plan</div>
+        <div class="plan-name">Global Access</div>
+        <div class="plan-price" style="color:#C4A8F0;">$179<span> / year</span></div>
+        <div class="plan-psub">Pay in USD · GBP · AED · CAD</div>
+        <ul>
+          <li>Everything in Astro Pro</li>
+          <li>Pay in USD, GBP, AED, CAD, SGD</li>
+          <li>Timezone-aware alerts</li>
+          <li>Dedicated NRI Telegram group</li>
+          <li>Secured by Stripe internationally</li>
+        </ul>
+        <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#7B5EA7,#A080D0);" onclick="openNriModal()">🌍 NRI Subscribe</button>
+      </div>
+    </div>
+    <div class="disclaimer">⚠️ Not investment advice · Not SEBI registered · For educational purposes only · Past accuracy does not guarantee future results</div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--dark2);">
+  <div class="container">
+    <div class="section-label">Community</div>
+    <h2 class="section-title">What Subscribers Say</h2>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p>"Flagged the April 2nd reversal days before it happened. MCX Gold timing is equally sharp. Covers everything I trade."</p>
+        <div class="test-author"><div class="avatar">R</div><div class="author-info"><strong>Rahul M.</strong><span>Swing Trader · Mumbai</span></div></div>
+      </div>
+      <div class="test-card nri-test" id="nriTest1">
+        <div class="stars">★★★★★</div>
+        <p>"As an NRI I was sceptical. The full MCX coverage and paying in AED made it effortless. Worth every dollar."</p>
+        <div class="test-author"><div class="avatar nri-av">S</div><div class="author-info"><strong>Sameer K.</strong><span>NRI Investor</span><div class="lflag">📍 Dubai, UAE 🇦🇪</div></div></div>
+      </div>
+      <div class="test-card">
+        <div class="stars">★★★★☆</div>
+        <p>"I use the planetary windows alongside technical analysis. The MCX Crude Mars calls have been very accurate for reversals."</p>
+        <div class="test-author"><div class="avatar">A</div><div class="author-info"><strong>Arjun K.</strong><span>Commodity Trader · Delhi</span></div></div>
+      </div>
+      <div class="test-card nri-test" id="nriTest2" style="display:none;">
+        <div class="stars">★★★★★</div>
+        <p>"Called the silver run in March. Paying in GBP and getting alerts at UK time makes it so easy to use from London."</p>
+        <div class="test-author"><div class="avatar nri-av">P</div><div class="author-info"><strong>Priya N.</strong><span>NRI Trader</span><div class="lflag">📍 London, UK 🇬🇧</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="background:var(--dark);">
+  <div class="cta-banner">
+    <div style="font-size:3rem;margin-bottom:14px;">🪐</div>
+    <h2>The Stars Don't Wait.<br/>Neither Should You.</h2>
+    <p id="ctaSubtext">Join 435+ subscribers reading the cosmos before the market moves.</p>
+    <div class="cta-btns">
+      <button class="btn-primary" onclick="openModal()">Subscribe — ₹15,000/yr</button>
+      <button class="btn-nri" id="ctaNriBtn" onclick="openNriModal()">🌍 NRI Access — $179/yr</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--dark2);">
+  <div class="container">
+    <div class="section-label" style="text-align:center;">FAQ</div>
+    <h2 class="section-title" style="text-align:center;">Frequently Asked Questions</h2>
+    <div class="faq-list" style="margin-top:36px;">
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What does the subscription include?<span class="faq-arrow">▼</span></div><div class="faq-a">The annual plan includes daily timing windows for Nifty 50, Bank Nifty and Sensex, MCX signals for Gold, Silver, Crude Oil, Copper and Natural Gas, weekly analysis, monthly cosmic calendar, premium Telegram alerts, and the full mobile app on iOS and Android.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Which markets do you cover?<span class="faq-arrow">▼</span></div><div class="faq-a">Indian indices (Nifty 50, Bank Nifty, Sensex) and MCX commodities (Gold, Silver, Crude Oil, Copper, Natural Gas). We do not cover individual stocks or international markets.</div></div>
+      <div class="faq-item" id="nriFaqItem" style="display:none;"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does the NRI plan work?<span class="faq-arrow">▼</span></div><div class="faq-a">NRI subscribers pay $179/year via Stripe in USD, GBP, AED, CAD or SGD. You get everything in the India plan plus timezone-aware alerts and a dedicated NRI Telegram group. No Indian bank account needed.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is this investment advice?<span class="faq-arrow">▼</span></div><div class="faq-a">No. We are not SEBI registered. All content is for educational purposes only. Please consult a qualified advisor before making financial decisions.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How accurate are the signals?<span class="faq-arrow">▼</span></div><div class="faq-a">89% accuracy over the last 90 days — 91% for indices, 87% for MCX. We publish full transparency on every call including misses.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can I get a refund?<span class="faq-arrow">▼</span></div><div class="faq-a">Yes. 7-day satisfaction guarantee. Contact us within the first 7 days for a full refund — no questions asked.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🪐 The Planetary Profits</div>
+  <div style="color:var(--muted);font-size:0.78rem;margin-bottom:14px;">Cosmic Timing. Market Rhythm.</div>
+  <div class="footer-links">
+    <a href="#">Twitter / X</a><a href="#">Telegram</a><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Disclaimer</a><a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 The Planetary Profits. For educational purposes only · Not SEBI registered · Not investment advice</div>
+</footer>
+
+<!-- INDIA MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal('modalBg')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalBg')">✕</button>
+    <h2>🪐 Join the Cosmos</h2>
+    <p class="modal-sub">Astro Pro — ₹15,000/year · All indices + MCX commodities</p>
+    <input class="minp" type="text" id="mName" placeholder="Full Name"/>
+    <input class="minp" type="email" id="mEmail" placeholder="Email Address"/>
+    <input class="minp" type="tel" id="mPhone" placeholder="Phone / WhatsApp"/>
+    <select class="minp" id="mPlan">
+      <option value="">Select a Plan</option>
+      <option value="free">Explorer — Free</option>
+      <option value="pro">Astro Pro — ₹15,000/year</option>
+    </select>
+    <button class="btn-primary" style="width:100%;margin-top:4px" onclick="submitModal('modalBg','successMsg1')">🪐 Activate My Access</button>
+    <div class="success-msg" id="successMsg1">✅ You're in! Check your email for next steps.</div>
+    <p class="modal-note">Payment via Razorpay · UPI, Cards, Net Banking · Not investment advice</p>
+  </div>
+</div>
+
+<!-- NRI MODAL -->
+<div class="modal-bg" id="nriModalBg" onclick="if(event.target===this)closeModal('nriModalBg')">
+  <div class="modal nri-modal">
+    <button class="modal-close" onclick="closeModal('nriModalBg')">✕</button>
+    <div style="font-size:1.8rem;margin-bottom:8px;">🌍</div>
+    <h2>NRI Global Access</h2>
+    <p class="modal-sub">Annual plan · Pay in your currency · Full signal access</p>
+    <input class="minp" type="text" id="nriName" placeholder="Full Name"/>
+    <input class="minp" type="email" id="nriEmail" placeholder="Email Address"/>
+    <input class="minp" type="tel" id="nriPhone" placeholder="WhatsApp (with country code)"/>
+    <select class="minp" id="nriCountry">
+      <option value="">Country of Residence</option>
+      <option>🇺🇸 United States</option><option>🇬🇧 United Kingdom</option>
+      <option>🇦🇪 UAE</option><option>🇨🇦 Canada</option>
+      <option>🇸🇬 Singapore</option><option>🇦🇺 Australia</option>
+      <option>🇩🇪 Europe</option><option>Other</option>
+    </select>
+    <select class="minp" id="nriCurrency">
+      <option value="">Preferred Currency</option>
+      <option>USD — $179/year</option>
+      <option>GBP — £142/year</option>
+      <option>AED — 657/year</option>
+      <option>CAD — $243/year</option>
+      <option>SGD — $241/year</option>
+    </select>
+    <div class="cur-note">All prices ≈ ₹15,000 · Secured via Stripe</div>
+    <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#7B5EA7,#A080D0);" onclick="submitModal('nriModalBg','successMsg2')">🌍 Activate NRI Access</button>
+    <div class="success-msg" id="successMsg2">✅ Welcome! Payment link sent to your email.</div>
+    <p class="modal-note">7-day guarantee · Not investment advice</p>
+  </div>
+</div>
+
+<script>
+// NRI detection
+function isNRI(){
+  try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone;return !(tz.indexOf('Calcutta')>=0||tz.indexOf('Kolkata')>=0);}
+  catch(e){return false;}
+}
+
+if(isNRI()){
+  document.getElementById('nriBanner').classList.add('show');
+  document.getElementById('nriPill').classList.add('show');
+  document.getElementById('heroNriBtn').classList.add('show');
+  document.getElementById('heroNriBtn').style.display='inline-block';
+  document.getElementById('nriSection').classList.add('show');
+  document.getElementById('nriPlanCard').classList.add('show');
+  document.getElementById('ctaNriBtn').classList.add('show');
+  document.getElementById('ctaNriBtn').style.display='inline-block';
+  document.getElementById('nriNavItem').style.display='list-item';
+  document.getElementById('nriFaqItem').style.display='block';
+  document.getElementById('nriTest2').style.display='block';
+  document.getElementById('heroH1').innerHTML='Read the Stars.<br/>Time the Market &mdash; Wherever You Are.';
+  document.getElementById('ctaSubtext').textContent='Join 435+ subscribers in India and around the world — reading the cosmos before the market moves.';
+}
+
+function openModal(){document.getElementById('modalBg').classList.add('open');}
+function openNriModal(){document.getElementById('nriModalBg').classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function submitModal(modalId,msgId){
+  var modal=document.getElementById(modalId);
+  var inputs=modal.querySelectorAll('input,select');
+  var ok=true;
+  inputs.forEach(function(i){if(!i.value)ok=false;});
+  if(!ok){alert('Please fill in all fields.');return;}
+  document.getElementById(msgId).style.display='block';
+  setTimeout(function(){closeModal(modalId);document.getElementById(msgId).style.display='none';},2800);
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+  });
+});
+</script>
+</body>
+</html>
